@@ -1,0 +1,12 @@
+lxml
+openpyxl
+peewee
+configparser
+psycopg2
+psutil
+schedule
+PySimpleGUI
+loguru
+pyinstaller
+auto-py-to-exe
+PyQt5
