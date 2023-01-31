@@ -159,6 +159,9 @@ New_copy = Equipment(path_to_exel, path_to_adressmap, path_to_adressmap_mb,
 #New_copy.gen_cfg_TII('D:\Проекты\НПС-Аксинино_2\HMI\_Docs\SU\\')
 #New_copy.gen_cfg_TR2('D:\Проекты\НПС-Аксинино_2\HMI\_Docs\SU\\')
 #New_copy.gen_cfg_TR4('D:\Проекты\НПС-Аксинино_2\HMI\_Docs\SU\\')
+New_copy.gen_cfg_DI_imit('D:\Проекты\НПС-Аксинино_2\HMI\_Docs\SU\\')
+
+
 
 # Тренды
 #New_copy.trends1_xml()

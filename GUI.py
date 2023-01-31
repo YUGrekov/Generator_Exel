@@ -1,6 +1,3 @@
-# ГРАФИЧЕСКИЙ ИНТЕРФЕЙС ДЛЯ ЗАПУСКА ГЕНЕРАТОРА
-# Для разработки будет использоваться более простая библиотека PySimpleGUI
-# Сформировать exe: в терминале добавить: auto-py-to-exe
 import sys
 for path in sys.path:
     print(path)
@@ -13,6 +10,10 @@ from function_code import *
 from gen_defence_hmi import *
 from gen_uts_upts_hmi import *
 from gen_uso import *
+
+# ГРАФИЧЕСКИЙ ИНТЕРФЕЙС ДЛЯ ЗАПУСКА ГЕНЕРАТОРА
+# Для разработки будет использоваться более простая библиотека PySimpleGUI
+# Сформировать exe: в терминале добавить: auto-py-to-exe
 
 # Логирование в файл
 def logging(path_save):
