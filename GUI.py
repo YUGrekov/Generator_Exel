@@ -211,6 +211,7 @@ tab9_layout = [
      sg.Text('AI: ', size=('3','0')), sg.InputText(key='Start_AI', size=(24)),
      sg.Text('DI: ', size=('3','0')), sg.InputText(key='Start_DI', size=(24)),
      sg.Text('DO: ', size=('3','0')), sg.InputText(key='Start_DO', size=(24))],
+    [sg.Button('Cfg_DI_Imit',  key='CFG_DI_IMIT',  size=(20,0)), sg.Button('Cfg_AI_Imit',  key='CFG_AI_IMIT',  size=(20,0))],
     [sg.Button('Заполнить конфигурацию', key='Click_imit_xml', size=(20, 0))]
 ]
 tab10_layout = [
@@ -2125,4 +2126,28 @@ while True:
         New_copy.file_xml_imitator(values['IMIT_PATH'], values['Start_AI'], values['Start_DI'], values['Start_DO'])
         logger.info(f'Генерация файла имитатора xml завершена')
         window['logger'].update(f'Генерация файла имитатора xml завершена\n', append=True)
+    # CFG_DI_IMIT
+    if event == 'CFG_DI_IMIT' and flag_not_click:
+        if values['IMIT_PATH'] == '':
+            logger.error(f'Отсутствует папка для размещения файлов')
+            window['logger'].update(f'Отсутствует папка для размещения файлов\n', append=True)
+            continue
+
+        logger.info(f'Генерация файла СУ: gen_cfg_DI_imit начата')
+        window['logger'].update(f'Генерация файла СУ: gen_cfg_DI_imit начата\n', append=True)
+        New_copy.gen_cfg_DI_imit(values['IMIT_PATH'])
+        logger.info(f'Генерация файла СУ: gen_cfg_DI_imit завершена')
+        window['logger'].update(f'Генерация файла СУ: gen_cfg_DI_imit завершена\n', append=True)
+    # CFG_AI_IMIT
+    if event == 'CFG_AI_IMIT' and flag_not_click:
+        if values['IMIT_PATH'] == '':
+            logger.error(f'Отсутствует папка для размещения файлов')
+            window['logger'].update(f'Отсутствует папка для размещения файлов\n', append=True)
+            continue
+
+        logger.info(f'Генерация файла СУ: gen_cfg_AI_imit начата')
+        window['logger'].update(f'Генерация файла СУ: gen_cfg_AI_imit начата\n', append=True)
+        New_copy.gen_cfg_AI_imit(values['IMIT_PATH'])
+        logger.info(f'Генерация файла СУ: gen_cfg_AI_imit завершена')
+        window['logger'].update(f'Генерация файла СУ: gen_cfg_AI_imit завершена\n', append=True)
 window.close()

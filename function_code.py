@@ -8558,17 +8558,20 @@ class Equipment(Initialisation_path):
                     s = s + str(value[el]) if value[el] is not None else s + '0'
 
                 numbers   = value['№']
-                tag       = value['Идентификатор']
+                tag       = self.translate(str(value['Идентификатор']))
                 name      = value['Название']
-                pHealth   = value['pHealth']
                 TS_ID     = value['TS_ID'] if value['TS_ID'] is not None else '0'
                 priority0 = value['priority[0]'] if value['priority[0]'] is not None else '0'
                 priority1 = value['priority[1]'] if value['priority[1]'] is not None else '0'
                 cfg       = str(hex(int(s, 2))).replace('0x', '16#')
 
+                numb_rack_KD = ''
+                numb_modl_KD = ''
+                numb_chan    = ''
+                name_uso_KD  = ''
                 for signal in data_KD:
-                    name_KD = signal['Наименование']
-                    if name_KD == name:
+                    tag_KD  = self.translate(str((signal['Tэг'])))
+                    if tag_KD == tag:
                         numb_rack_KD = signal['Корз']
                         numb_modl_KD = signal['Мод']
                         numb_chan    = signal['Кан']
@@ -8578,7 +8581,7 @@ class Equipment(Initialisation_path):
                 exit_True = False
                 for i in range(4, sheet.max_row + 1):
                     if exit_True: break
-                    name_uso_HW = sheet.cell(row=i, column=4).value
+                    name_uso_HW  = sheet.cell(row=i, column=4).value
                     numb_rack_HW = sheet.cell(row=i, column=5).value
                     
                     if (name_uso_HW == name_uso_KD) and (numb_rack_KD == numb_rack_HW):
@@ -8592,34 +8595,89 @@ class Equipment(Initialisation_path):
                                  if numb_modl_HW == str(numb_modl_KD):
                                     through_num_mod = int((re.findall(r'\d+', type_modul))[0])
                                     exit_True = True
-                                    print(name, through_num_mod, numb_rack_KD, numb_modl_HW)
 
+                                    cfg_txt = f'(*{tag} {name}*)\n' \
+                                                f'cfgDI[{numbers}].pValue         REF=  gv_sim.sim_di[{through_num_mod}].ChannelBool[{numb_chan}];\n' \
+                                                f'cfgDI[{numbers}].pHealth        REF=  1;\n' \
+                                                f'cfgDI[{numbers}].TS_ID            :=  {TS_ID};\n' \
+                                                f'cfgDI[{numbers}].priority[0]      :=  {priority0};\n' \
+                                                f'cfgDI[{numbers}].priority[1]      :=  {priority1};\n' \
+                                                f'cfgDI[{numbers}].cfg.reg          :=  {cfg};\n'
+                                    text_file.write(cfg_txt)
+                                    break
+            text_file.close()
+            logger.info(f'{self.name_prefix} выполнено {path_cfg}')
+        except:
+            logger.error(f'{self.name_prefix} FAILED')
+    # Imitator_Cfg_AI
+    @logger.catch
+    def gen_cfg_AI_imit(self,path):
+        data_AI = self.data['AI']
+        data_KD = self.data['КД']
+        wb = openpyxl.load_workbook(self.exel, read_only=True)
+        sheet = wb['HW']
+        try:
+            path_cfg = f'{path}\cfg_AI_imitation.txt'
+            # Проверяем файл на наличие в папке, если есть удаляем и создаем новый
+            if not os.path.exists(path_cfg):
+                text_file = open(path_cfg, 'w')
+                text_file.write('(*Cfg_AI_imitation*)\n')
+            else:
+                os.remove(path_cfg)
+                text_file = open(path_cfg, 'w')
+                text_file.write('(*Cfg_AI_imitation*)\n')
 
-                
-                
+            for value in data_AI:
+                numbers      = value['№']
+                tag          = self.translate(str(value['Идентификатор']))
+                name         = value['Название']
+                isVibroPump  = value['Вибрация насоса'] if value['Вибрация насоса'] is not None else '0'
+                isVibroED    = value['Вибрация ЭД'] if value['Вибрация ЭД'] is not None else '0'
+                isCT         = value['Ток ЭД НА'] if value['Ток ЭД НА'] is not None else '0'
+                isPressureVS = '1' if value['Номер НА или вспом.'] is not None else '0'
+                cfgAI        = str(hex(int('000000000000'+str(isPressureVS)+str(isCT)+str(isVibroED)+str(isVibroPump),2))).replace('0x','16#')
+                nNA_VS       = value['Номер НА или вспом.'] if value['Номер НА или вспом.'] is not None else '0'
 
-                # cfg_txt = f'(*{tag} {name}*)\n' \
-                #             f'cfgDI[{numbers}].pValue         REF=  gv_sim.sim_di[{numb_mod}].ChannelBool[{numb_chan}];\n' \
-                #             f'cfgDI[{numbers}].pHealth        REF=  {pHealth};\n' \
-                #             f'cfgDI[{numbers}].TS_ID            :=  {TS_ID};\n' \
-                #             f'cfgDI[{numbers}].priority[0]      :=  {priority0};\n' \
-                #             f'cfgDI[{numbers}].priority[1]      :=  {priority1};\n' \
-                #             f'cfgDI[{numbers}].cfg.reg          :=  {cfg};\n'
+                numb_rack_KD = ''
+                numb_modl_KD = ''
+                numb_chan    = ''
+                name_uso_KD  = ''
+                for signal in data_KD:
+                    tag_KD  = self.translate(str((signal['Tэг'])))
+                    if tag_KD == tag:
+                        numb_rack_KD = signal['Корз']
+                        numb_modl_KD = signal['Мод']
+                        numb_chan    = signal['Кан']
+                        name_uso_KD  = signal['Шкаф']
+                        break
 
+                exit_True = False
+                for i in range(4, sheet.max_row + 1):
+                    if exit_True: break
+                    name_uso_HW  = sheet.cell(row=i, column=4).value
+                    numb_rack_HW = sheet.cell(row=i, column=5).value
+                    
+                    if (name_uso_HW == name_uso_KD) and (numb_rack_KD == numb_rack_HW):
+                        
+                        for j in range(11, sheet.max_column + 1):
+                            type_modul = sheet.cell(row=i, column=j + 1).value
+                            
+                            if self.str_find(type_modul, {'mAI'}):
+                                 numb_modl_HW = str(sheet.cell(row=2, column=j).value).replace('_0', '').replace('_', '')
+                                 
+                                 if numb_modl_HW == str(numb_modl_KD):
+                                    through_num_mod = int((re.findall(r'\d+', type_modul))[0])
+                                    exit_True = True
 
-
-
-                # for signal in data_KD:
-                #     name_KD = signal['Наименование']
-                #     if name == name_KD:
-                #         numb_mod  = signal['Мод']
-                #         numb_chan = signal['Кан']
-
-                #         cfg_txt = f'(*{tag} {name}*)\n' \
-                #                 f'cfgDI[{numbers}].pValue         REF= gv_sim.sim_di[{numb_mod}].ChannelBool[{numb_chan}];\n'
-                #         text_file.write(cfg_txt)
-                #         break
-            
+                                    cfg_txt = f'(* {tag} {name} *)\n' \
+                                            f'cfgAI[{numbers}].pValue                       REF=\tgv_sim.sim_AI[{through_num_mod}].Channel[{numb_chan}];\n'\
+                                            f'cfgAI[{numbers}].pHealth                      REF=\t1;\n' \
+                                            f'cfgAI[{numbers}].cfgWarnAvar.reg                :=\t16#0000;\n' \
+                                            f'cfgAI[{numbers}].cfgAI.reg                      :=\t16#0000;\n' \
+                                            f'cfgAI[{numbers}].nNA_VS                         :=\t{nNA_VS};\n' \
+                                            f'cfgAI[{numbers}].nFuse                          :=\t0;\n'
+                                    text_file.write(cfg_txt)
+                                    break
             text_file.close()
             logger.info(f'{self.name_prefix} выполнено {path_cfg}')
         except:
@@ -8678,11 +8736,11 @@ class Equipment(Initialisation_path):
                 name            = value['Название']
                 pValue          = value['УСО, модуль, канал']
                 pHealth         = value['Исправность канала']
-                isVibroPump = value['Вибрация насоса'] if value['Вибрация насоса'] is not None else '0'
-                isVibroED = value['Вибрация ЭД'] if value['Вибрация ЭД'] is not None else '0'
-                isCT = value['Ток ЭД НА'] if value['Ток ЭД НА'] is not None else '0'
-                isPressureVS = '1' if value['Номер НА или вспом.'] is not None else '0'
-                isExternal = value['Давление на вых. вспом.'] if value['Давление на вых. вспом.'] is not None else '0'
+                isVibroPump     = value['Вибрация насоса'] if value['Вибрация насоса'] is not None else '0'
+                isVibroED       = value['Вибрация ЭД'] if value['Вибрация ЭД'] is not None else '0'
+                isCT            = value['Ток ЭД НА'] if value['Ток ЭД НА'] is not None else '0'
+                isPressureVS    = '1' if value['Номер НА или вспом.'] is not None else '0'
+                isExternal      = value['Давление на вых. вспом.'] if value['Давление на вых. вспом.'] is not None else '0'
                 # cfgWarnAvar     = str(hex(int(value['Сигнализация'],2))).replace('0x','16#') if value['Сигнализация'] is not None else '16#0000'
                 cfgAI           = str(hex(int('000000000000'+str(isPressureVS)+str(isCT)+str(isVibroED)+str(isVibroPump),2))).replace('0x','16#')
                 nNA_VS          = value['Номер НА или вспом.'] if value['Номер НА или вспом.'] is not None else '0'
@@ -8739,8 +8797,6 @@ class Equipment(Initialisation_path):
                 num = f'[{str(modul[1]).replace("]","")}][{str(ch[1]).replace("]","")}]'
                 cfg_txt = f'(*{tag} {name}*)\n' \
                           f'cfgAI[{numbers}].pValue\tREF=\tsimAI{num};\n' \
-
-
 
                 text_file.write(cfg_txt)
             text_file.close()
