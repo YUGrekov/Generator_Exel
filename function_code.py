@@ -8597,7 +8597,7 @@ class Equipment(Initialisation_path):
                                     exit_True = True
 
                                     cfg_txt = f'(*{tag} {name}*)\n' \
-                                                f'cfgDI[{numbers}].pValue         REF=  gv_sim.sim_di[{through_num_mod}].ChannelBool[{numb_chan}];\n' \
+                                                f'cfgDI[{numbers}].pValue         REF=  gv_sim.buf_sim_di_bool[{through_num_mod}].Bit_{numb_chan};\n' \
                                                 f'cfgDI[{numbers}].pHealth        REF=  1;\n' \
                                                 f'cfgDI[{numbers}].TS_ID            :=  {TS_ID};\n' \
                                                 f'cfgDI[{numbers}].priority[0]      :=  {priority0};\n' \
@@ -8670,7 +8670,7 @@ class Equipment(Initialisation_path):
                                     exit_True = True
 
                                     cfg_txt = f'(* {tag} {name} *)\n' \
-                                            f'cfgAI[{numbers}].pValue                       REF=\tgv_sim.sim_AI[{through_num_mod}].Channel[{numb_chan}];\n'\
+                                            f'cfgAI[{numbers}].pValue                       REF=\tgv_sim.sim_AI[{numbers}].Channel[{numb_chan}];\n'\
                                             f'cfgAI[{numbers}].pHealth                      REF=\t1;\n' \
                                             f'cfgAI[{numbers}].cfgWarnAvar.reg                :=\t16#0000;\n' \
                                             f'cfgAI[{numbers}].cfgAI.reg                      :=\t16#0000;\n' \
@@ -9780,7 +9780,7 @@ class Equipment(Initialisation_path):
         return (f'Выполнено. Генерация файла TM_TR4')
 
     # Сборка файла xml для имитатора
-    def file_xml_imitator(self, path, mb_AI, mb_DI, mb_DO):
+    def file_xml_imitator(self, path, mb_AI, mb_DI):
         path_imit= f'{path}\Imitation_file.xml'
         # Проверяем файл на наличие в папке, если есть удаляем, и создаем новый
         if not os.path.exists(path_imit):
@@ -9794,65 +9794,110 @@ class Equipment(Initialisation_path):
         # Собираем данные
         try:
             wb = openpyxl.load_workbook(self.exel, read_only=True)
-            sheet         = wb['HW']
-            signals       = []
-            count_through = 0
-            count_reg     = 0
-            for i in range(4, sheet.max_row + 1):
-                name_uso = sheet.cell(row=i, column=4).value
-                num_rack = sheet.cell(row=i, column=5).value
-                for j in range(11, sheet.max_column + 1):
-                    type_modul = sheet.cell(row=i, column=j + 1).value
-                    if self.str_find(type_modul, {'mDI'}) or self.str_find(type_modul, {'mAI'}):
-                        # Флаг текущего модуля
-                        flag_DI = True if self.str_find(type_modul, {'mDI'}) else False
-                        flag_AI = True if self.str_find(type_modul, {'mAI'}) else False
-                        # Номер модуля и счетчик каждого модуля
-                        num_mod         = str(sheet.cell(row=2, column=j).value).replace('_0', '').replace('_', '')
-                        through_num_mod = int((re.findall(r'\d+', type_modul))[0])
-                        if flag_DI: count_bits = 0
+            sheet     = wb['HW']
+            signals   = []
+            count_reg = 0
 
-                        for data in self.data['КД']:
-                            name_kd = data['Наименование']
-                            tag_kd  = data['Tэг']
-                            uso_kd  = data['Шкаф']
-                            rack_kd = data['Корз']
-                            mod_kd  = data['Мод']
-                            chan_kd = data['Кан']
-                            if name_uso == uso_kd and num_rack == rack_kd and int(num_mod) == mod_kd:
-                                count_through += 1
-                                # Обрабатываем дискреты
-                                if flag_DI:
-                                    count_bits += 1
-                                    mb_adrr_DI = f'{int(mb_DI) + (through_num_mod - 1)}.{count_bits - 1}'
-                                    signals.append(dict(Index       = count_through,
-                                                        Type        = 'DI',
-                                                        Tag         = tag_kd,
-                                                        Description = name_kd,
-                                                        Cabinet     = uso_kd,
-                                                        MBAddr_DI   = mb_adrr_DI))
-                                # Обрабатываем дискреты
-                                if flag_AI:
-                                    mb_adrr_AI = f'{int(mb_AI) + count_reg}'
-                                    for data_AI in self.data['AI']:
-                                        name_AI = data_AI['Название']
-                                        Min_ADC = data_AI['Пол. мин.']
-                                        Min_EGU = data_AI['Инж. Мин.']
-                                        Max_ADC = data_AI['Пол. макс.']
-                                        Max_EGU = data_AI['Инж. Макс.']
-                                        if name_AI == name_kd:
-                                            signals.append(dict(Index       = count_through,
-                                                                Type        = 'AI',
-                                                                Tag         = tag_kd,
-                                                                Description = name_kd,
-                                                                Cabinet     = uso_kd,
-                                                                MBAddr_AI   = mb_adrr_AI,
-                                                                Min_ADC     = Min_ADC,
-                                                                Min_EGU     = Min_EGU,
-                                                                Max_ADC     = Max_ADC,
-                                                                Max_EGU     = Max_EGU))
-                                            count_reg += 1
-                                            break
+            for data_AI in self.data['AI']:
+                numb_AI = data_AI['№']
+                name_AI = data_AI['Название']
+                tag     = self.translate(str(data_AI['Идентификатор']))
+                Min_ADC = data_AI['Пол. мин.']
+                Min_EGU = data_AI['Инж. Мин.']
+                Max_ADC = data_AI['Пол. макс.']
+                Max_EGU = data_AI['Инж. Макс.']
+
+                numb_rack_KD = ''
+                numb_modl_KD = ''
+                name_uso_KD  = ''
+                numb_chan_KD = ''
+                for signal in self.data['КД']:
+                    tag_KD  = self.translate(str((signal['Tэг'])))
+                    if tag_KD == tag:
+                        name_uso_KD  = signal['Шкаф']
+                        numb_rack_KD = signal['Корз']
+                        numb_modl_KD = signal['Мод']
+                        numb_chan_KD = signal['Кан']
+                        break
+                
+                exit_True = False
+                for i in range(4, sheet.max_row + 1):
+                    if exit_True: break
+                    name_uso_HW  = sheet.cell(row=i, column=4).value
+                    numb_rack_HW = sheet.cell(row=i, column=5).value
+                    
+                    if (name_uso_HW == name_uso_KD) and (numb_rack_KD == numb_rack_HW):
+                        
+                        for j in range(11, sheet.max_column + 1):
+                            type_modul = sheet.cell(row=i, column=j + 1).value
+                            
+                            if self.str_find(type_modul, {'mAI'}):
+                                    numb_modl_HW = str(sheet.cell(row=2, column=j).value).replace('_0', '').replace('_', '')
+                                    
+                                    if numb_modl_HW == str(numb_modl_KD):
+                                        through_num_mod = int((re.findall(r'\d+', type_modul))[0])
+                                        exit_True = True
+
+                                        mb_adrr_AI = f'{int(mb_AI) + ((through_num_mod - 1)*8) + (numb_chan_KD-1)}'
+                                        signals.append(dict(Index       = numb_AI,
+                                                            Type        = 'AI',
+                                                            Tag         = tag,
+                                                            Description = name_AI,
+                                                            Cabinet     = name_uso_KD,
+                                                            MBAddr_AI   = mb_adrr_AI,
+                                                            Min_ADC     = Min_ADC,
+                                                            Min_EGU     = Min_EGU,
+                                                            Max_ADC     = Max_ADC,
+                                                            Max_EGU     = Max_EGU))
+                                        count_reg += 1
+                                        break
+
+            for data_DI in self.data['DI']:
+                numb_DI = data_DI['№']
+                name_DI = data_DI['Название']
+                tag     = self.translate(str(data_DI['Идентификатор']))
+                
+                numb_rack_KD = ''
+                numb_modl_KD = ''
+                name_uso_KD  = ''
+                numb_chan_KD = ''
+                for signal in self.data['КД']:
+                    tag_KD  = self.translate(str((signal['Tэг'])))
+                    if tag_KD == tag:
+                        name_uso_KD  = signal['Шкаф']
+                        numb_rack_KD = signal['Корз']
+                        numb_modl_KD = signal['Мод']
+                        numb_chan_KD = signal['Кан']
+                        break
+                
+                exit_True = False
+                for i in range(4, sheet.max_row + 1):
+                    if exit_True: break
+                    name_uso_HW  = sheet.cell(row=i, column=4).value
+                    numb_rack_HW = sheet.cell(row=i, column=5).value
+                    
+                    if (name_uso_HW == name_uso_KD) and (numb_rack_KD == numb_rack_HW):
+                        
+                        for j in range(11, sheet.max_column + 1):
+                            type_modul = sheet.cell(row=i, column=j + 1).value
+                            
+                            if self.str_find(type_modul, {'mDI'}):
+                                    numb_modl_HW = str(sheet.cell(row=2, column=j).value).replace('_0', '').replace('_', '')
+                                    
+                                    if numb_modl_HW == str(numb_modl_KD):
+                                        through_num_mod = int((re.findall(r'\d+', type_modul))[0])
+
+                                        exit_True = True
+
+                                        mb_adrr_DI = f'{int(mb_DI) + (through_num_mod - 1)}.{numb_chan_KD - 1}'
+                                        signals.append(dict(Index       = numb_DI,
+                                                            Type        = 'DI',
+                                                            Tag         = tag,
+                                                            Description = name_DI,
+                                                            Cabinet     = name_uso_KD,
+                                                            MBAddr_DI   = mb_adrr_DI))
+                                        break
+
             # Формируем файл
             object_one = etree.Element('Signals')
             for data in signals:

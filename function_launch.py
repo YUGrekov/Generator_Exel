@@ -6,10 +6,10 @@ from lxml import etree
 import codecs
 
 # Пути до файлов неисповедимы
-#path_to_exel        = 'D:\Проекты\НПС-Аксинино_2\HMI\_Docs\НПС Аксинино-2 IO МК-500 v1.78.xlsx'
+path_to_exel        = 'D:\Проекты\НПС-Аксинино_2\HMI\_Docs\НПС Аксинино-2 IO МК-500 v1.78.xlsx'
 #path_to_exel        = 'D:\Проекты\НПС-Аксинино_2\HMI\_Docs\KarkateevoIO.xlsx'
 #path_to_exel        = 'D:\Проекты\LPDS_Salim\HMI\_Docs\ИО_ПТ_Салым_v2.46.xlsx'
-path_to_exel         = 'D:\Проекты\НПС-Аксинино_2\HMI\_Docs\АСУ ПТ Аксинино-2 IO_v3.72.xlsx'
+#path_to_exel         = 'D:\Проекты\НПС-Аксинино_2\HMI\_Docs\АСУ ПТ Аксинино-2 IO_v3.72.xlsx'
 #path_to_exel        = 'D:\Проекты\НПС-Аксинино_2\HMI\_Docs\САР (Дросселирование) IO_30.08.2022.xlsx'
 #path_to_exel        = 'D:\Проекты\LPDS_Salim\HMI_KARKAR\_Docs\KarkateevoIO.xlsx'
 
@@ -144,7 +144,7 @@ New_copy = Equipment(path_to_exel, path_to_adressmap, path_to_adressmap_mb,
 #New_copy.diag_rackstates()
 
 # Imitator
-#New_copy.file_xml_imitator(path_file_txt, 37000, 35000, 39000)
+New_copy.file_xml_imitator(path_file_txt, 50200, 50000)
 
 #New_copy.gen_cfg_pic('D:\Проекты\НПС-Аксинино_2\HMI\_Docs\SU\\', 'MNS')
 #New_copy.gen_cfg_ktprs('D:\Проекты\НПС-Аксинино_2\HMI\_Docs\SU\\')
