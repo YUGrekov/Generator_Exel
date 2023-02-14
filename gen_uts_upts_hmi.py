@@ -253,9 +253,9 @@ def modification_list_uts_upts(max_value_2, path_file, root, tree, list_active, 
         for lvl_two in lvl_one.iter('designed'):
             if lvl_two.attrib['value'] == 'coordinate_H':
                 if (button_bool == False):
-                    lvl_two.attrib['value'] = str(((max_value_2) * 26) + 61)
+                    lvl_two.attrib['value'] = str(((max_value_2 + 1) * 26) + 61)
                 else:
-                    lvl_two.attrib['value'] = str(((max_value_2) * 26) + 103)
+                    lvl_two.attrib['value'] = str(((max_value_2 + 1) * 26) + 103)
 
             if lvl_two.attrib['value'] == 'coordinate_W':
                 lvl_two.attrib['value'] = coordinate_Width
@@ -370,24 +370,25 @@ def gen_uts_upts(path_file, file_exel, list_uts_upts, verify):
 
                     init_1_target = 'ApSource_form_' + list_active.title + 's'
 
-                    siren = etree.Element('object')
-                    siren.attrib['access-modifier'] = 'private'
-                    siren.attrib['name'] = "type_siren"
-                    siren.attrib['display-name'] = "type_siren"
-                    siren.attrib['uuid'] = str(uuid.uuid1())
-                    siren.attrib['base-type'] = "type_uts_siren"
-                    siren.attrib['base-type-id'] = "9b36c57c-7b17-4397-b329-a35cbb9d5056"
-                    siren.attrib['ver'] = '5'
-                    object.append(siren)
-                    for key, value in attrib_uts_row_design.items():
-                        siren_info = etree.Element("designed")
-                        siren_info.attrib['target'] = value[0]
-                        if key == '2':
-                            siren_info.attrib['value'] = "0"
-                        else:
-                            siren_info.attrib['value'] = value[1]
-                        siren_info.attrib['ver'] = value[2]
-                        siren.append(siren_info)
+                    if number_list == 0:
+                        siren = etree.Element('object')
+                        siren.attrib['access-modifier'] = 'private'
+                        siren.attrib['name'] = "type_siren"
+                        siren.attrib['display-name'] = "type_siren"
+                        siren.attrib['uuid'] = str(uuid.uuid1())
+                        siren.attrib['base-type'] = "type_uts_siren"
+                        siren.attrib['base-type-id'] = "9b36c57c-7b17-4397-b329-a35cbb9d5056"
+                        siren.attrib['ver'] = '5'
+                        object.append(siren)
+                        for key, value in attrib_uts_row_design.items():
+                            siren_info = etree.Element("designed")
+                            siren_info.attrib['target'] = value[0]
+                            if key == '2':
+                                siren_info.attrib['value'] = "0"
+                            else:
+                                siren_info.attrib['value'] = value[1]
+                            siren_info.attrib['ver'] = value[2]
+                            siren.append(siren_info)
 
                     # Ходим по Exel и ищем текущий активный лист
                     for item in write_data:
@@ -425,7 +426,7 @@ def gen_uts_upts(path_file, file_exel, list_uts_upts, verify):
                                     uts_info = etree.Element("designed")
                                     uts_info.attrib['target'] = value[0]
                                     if key == '2':
-                                        coord_Y = value[1] * (position_on_list - 1)
+                                        coord_Y = value[1] * (position_on_list)
                                         uts_info.attrib['value'] = str(coord_Y)
                                     else:
                                         uts_info.attrib['value'] = value[1]
@@ -453,4 +454,4 @@ def gen_uts_upts(path_file, file_exel, list_uts_upts, verify):
                     data_inf_button.clear()
 
     tree.write(new_pic_path, pretty_print=True)
-    logger.info(f'{text_end}успешно заполнен!')
+    logger.info(f'{text_end} успешно заполнен!')

@@ -69,16 +69,16 @@ def main():
     # 26348, 27378, 7990, -11523, -26393]
     # array = [-4, 3, -5, 2, 5]
     # array = list(map(int, input().split()))
-    array = [3,5,1,7,9,0,9,-3,10]
-    #array = [1,2,3,4]
-    a = sorted(array)
-    c = a[-3:]
-    d = a[:3]
-    print(c, d)
-    if c[0]*c[1]*d[0] > d[0]*d[1]*d[2]:
-        for x in c: print(x, end=' ')
-    else:
-        for x in d: print(x, end=' ')
+    # array = [3,5,1,7,9,0,9,-3,10]
+    # #array = [1,2,3,4]
+    # a = sorted(array)
+    # c = a[-3:]
+    # d = a[:3]
+    # print(c, d)
+    # if c[0]*c[1]*d[0] > d[0]*d[1]*d[2]:
+    #     for x in c: print(x, end=' ')
+    # else:
+    #     for x in d: print(x, end=' ')
 
 
 

@@ -591,73 +591,73 @@ class Equipment(Initialisation_path):
         data_di   = self.data['DI']
         data_ai   = self.data['AI']
         el1, tree = self.parser_omx('Diskrets')
-        try:
-            for value in data_di:
-                name      = value['Название']
-                number_di = value['№']
-                pNC_AI    = value['pNC_AI']
-                tag       = value['Идентификатор']
-                caption   = value['Подпись на мнемокадре']
+        #try:
+        for value in data_di:
+            name      = value['Название']
+            number_di = value['№']
+            pNC_AI    = value['pNC_AI']
+            tag       = value['Идентификатор']
+            caption   = value['Подпись на мнемокадре']
 
-                if name is None: continue
-                if tag  is None: continue
-                tag      = self.translate(str(tag))
-                tag_ai   = ' '
-                tag_ai_1 = ' '
-                if not pNC_AI is None:
-                    isdigit = re.findall('\d+', str(pNC_AI))
-                    for number in data_ai:
-                        number_ai = number['№']
-                        tag_ai    = number['Идентификатор']
-                        if str(number_ai) == str(isdigit[0]):
-                            if tag_ai is None:
-                                print('Тэг AI сигнала под номером: ' + number_ai + 'пуст')
-                                break
-                            else:
-                                tag_ai_1 = tag_ai
-                                tag_ai   = self.translate(tag_ai)
-                                break
-                if caption is None:
-                    for key, value in dop_discret.items():
-                        # Находим совпадение из словаря с названием сигнала и заполняем подпись
-                        sign = ' '
-                        if self.str_find(str(name).lower(), {key}):
-                            sign = str(value)
+            if name is None: continue
+            if tag  is None: continue
+            tag      = self.translate(str(tag))
+            tag_ai   = ' '
+            tag_ai_1 = ' '
+            if not pNC_AI is None:
+                isdigit = re.findall('\d+', str(pNC_AI))
+                for number in data_ai:
+                    number_ai = number['№']
+                    tag_ai    = number['Идентификатор']
+                    if str(number_ai) == str(isdigit[0]):
+                        if tag_ai is None:
+                            print('Тэг AI сигнала под номером: ' + number_ai + 'пуст')
                             break
-                else:
-                    sign = str(caption)
-                object = etree.Element("{automation.control}object")
-                object.attrib['name'] = str(tag)
-                object.attrib['uuid'] = str(uuid.uuid1())
-                object.attrib['base-type'] = "unit.Library.PLC_Types.Diskret_PLC"
-                object.attrib['aspect'] = "unit.Library.PLC_Types.PLC"
-                atrb1 = etree.Element("attribute")
-                atrb1.attrib['type'] = "unit.Library.Attributes.Index"
-                atrb1.attrib['value'] = str(number_di)
-                object.append(atrb1)
-                atrb2 = etree.Element("attribute")
-                atrb2.attrib['type'] = "unit.Library.Attributes.Sign"
-                atrb2.attrib['value'] = str(sign)
-                object.append(atrb2)
-                atrb3 = etree.Element("attribute")
-                atrb3.attrib['type'] = "unit.System.Attributes.Description"
-                atrb3.attrib['value'] = str(name)
-                object.append(atrb3)
-                atrb4 = etree.Element("attribute")
-                atrb4.attrib['type'] = "unit.Library.Attributes.AI_Ref"
-                atrb4.attrib['value'] = str(tag_ai)
-                object.append(atrb4)
-                atrb5 = etree.Element("attribute")
-                atrb5.attrib['type'] = "unit.Library.Attributes.AI_Ref_KZFKP"
-                atrb5.attrib['value'] = str(tag_ai_1)
-                object.append(atrb5)
-                el1.append(object)
-            tree.write(self.omx, pretty_print=True)
-            logger.info(f'Diskrets: файл omx OK')
-            return (f'Diskrets: файл omx OK')
-        except:
-            logger.info(f'Diskrets: файл omx FAILED')
-            return (f'Diskrets: файл omx FAILED')
+                        else:
+                            tag_ai_1 = tag_ai
+                            tag_ai   = self.translate(tag_ai)
+                            break
+            if caption is None:
+                for key, value in dop_discret.items():
+                    # Находим совпадение из словаря с названием сигнала и заполняем подпись
+                    sign = ' '
+                    if self.str_find(str(name).lower(), {key}):
+                        sign = str(value)
+                        break
+            else:
+                sign = str(caption)
+            object = etree.Element("{automation.control}object")
+            object.attrib['name'] = str(tag)
+            object.attrib['uuid'] = str(uuid.uuid1())
+            object.attrib['base-type'] = "unit.Library.PLC_Types.Diskret_PLC"
+            object.attrib['aspect'] = "unit.Library.PLC_Types.PLC"
+            atrb1 = etree.Element("attribute")
+            atrb1.attrib['type'] = "unit.Library.Attributes.Index"
+            atrb1.attrib['value'] = str(number_di)
+            object.append(atrb1)
+            atrb2 = etree.Element("attribute")
+            atrb2.attrib['type'] = "unit.Library.Attributes.Sign"
+            atrb2.attrib['value'] = str(sign)
+            object.append(atrb2)
+            atrb3 = etree.Element("attribute")
+            atrb3.attrib['type'] = "unit.System.Attributes.Description"
+            atrb3.attrib['value'] = str(name)
+            object.append(atrb3)
+            atrb4 = etree.Element("attribute")
+            atrb4.attrib['type'] = "unit.Library.Attributes.AI_Ref"
+            atrb4.attrib['value'] = str(tag_ai)
+            object.append(atrb4)
+            atrb5 = etree.Element("attribute")
+            atrb5.attrib['type'] = "unit.Library.Attributes.AI_Ref_KZFKP"
+            atrb5.attrib['value'] = str(tag_ai_1)
+            object.append(atrb5)
+            el1.append(object)
+        tree.write(self.omx, pretty_print=True)
+        logger.info(f'Diskrets: файл omx OK')
+        return (f'Diskrets: файл omx OK')
+        # except:
+        #     logger.info(f'Diskrets: файл omx FAILED')
+        #     return (f'Diskrets: файл omx FAILED')
     # Индикаторы событий Picture
     @logger.catch
     def picture_omx(self):
@@ -3761,6 +3761,7 @@ class Equipment(Initialisation_path):
                         name_uso_rus = str(sheet.cell(row=i, column=4).value)
                         rack         = str(sheet.cell(row=i, column=5).value)
                         type_modul   = str(sheet.cell(row=i, column=j - 1).value)
+                        isdigit_num  = re.findall('\d+', str(cell_ai))
                         modul_dash   = number_modul
                         modul_point  = number_modul
 
@@ -3774,7 +3775,8 @@ class Equipment(Initialisation_path):
                         a_dict = dict(name_uso_rus=name_uso_rus,
                                       uso_rack_modul=uso_rack_modul,
                                       rack=rack,
-                                      modul_dash=modul_dash)
+                                      modul_dash=modul_dash,
+                                      isdigit_num = isdigit_num[0])
                         signals.append(a_dict)
 
                         object = etree.Element("{automation.control}object")
@@ -3827,7 +3829,8 @@ class Equipment(Initialisation_path):
             count_array = 0
             # Цикл по всем добавленным модулям DI
             for initial_data in signals:
-                name_eng = initial_data['uso_rack_modul']
+                name_eng    = initial_data['uso_rack_modul']
+                isdigit_num = int(initial_data['isdigit_num'])
                 # Цикл по количеству дискретных модулей
                 count_array += 1
                 for key, value in dop_NOC_NOEs.items():
@@ -3844,10 +3847,10 @@ class Equipment(Initialisation_path):
                     object.append(address)
 
                     array_pos = etree.Element('arrayposition')
-                    if key == '.diag'        : array_pos.text = str(164 + count_array - 1)
-                    if key == '.port1_errcnt': array_pos.text = str(57 + (4 * (count_array - 1)))
-                    if key == '.port2_errcnt': array_pos.text = str(58 + (4 * (count_array - 1)))
-                    if key == '.port3_errcnt': array_pos.text = str(59 + (4 * (count_array - 1)))
+                    if key == '.diag'        : array_pos.text = str(164 + (isdigit_num - 1))
+                    if key == '.port1_errcnt': array_pos.text = str(57 + (4 * (isdigit_num - 1)))
+                    if key == '.port2_errcnt': array_pos.text = str(58 + (4 * (isdigit_num - 1)))
+                    if key == '.port3_errcnt': array_pos.text = str(59 + (4 * (isdigit_num - 1)))
                     object.append(array_pos)
                     root.append(object)
                 tree.write(self.map, pretty_print=True)
@@ -6053,46 +6056,47 @@ class Equipment(Initialisation_path):
             file = codecs.open(path_sql, 'w', 'utf-8')
             file.write(script_sql_textfile)
 
-        try:
-            for data in data_kd:
-                type_str = data['Тип сигнала']
-                cabinet  = data['Шкаф']
-                tag      = data['Tэг']
-                desc     = data['Наименование']
-                klk      = data['КлК']
-                kont     = data['Конт']
-                rack     = data['Корз']
-                mod      = data['Мод']
-                position = data['Кан']
+        #try:
+        for data in data_kd:
+            type_str = data['Тип сигнала']
+            cabinet  = data['Шкаф']
+            tag      = data['Tэг']
+            desc     = data['Наименование']
+            klk      = data['КлК']
+            kont     = data['Конт']
+            rack     = data['Корз']
+            mod      = data['Мод']
+            position = data['Кан']
 
-                if tag is None: continue
-                if type_str is None: continue
-                if klk is None : klk = ''
-                if kont is None: kont = ''
+            if tag is None: continue
+            if type_str is None: continue
+            if klk is None : klk = ''
+            if kont is None: kont = ''
+            if self.str_find(str(type_str).lower(), {'rs'}): type_str = 'NOM'
 
-                tag = self.translate(str(tag))
-                for name in data_uso:
-                    name_eng = name['Идентификатор']
-                    name_rus = name['Название']
+            tag = self.translate(str(tag))
+            for name in data_uso:
+                name_eng = name['Идентификатор']
+                name_rus = name['Название']
 
-                    if name_eng is None: continue
-                    if name_rus is None: continue
+                if name_eng is None: continue
+                if name_rus is None: continue
 
-                    if str(name_rus) == str(cabinet):
-                        mod_1 = mod
-                        mod_1 = ('0' + str(mod_1)) if (int(mod_1) < 10) else mod_1
-                        initPath = 'Diag.' + str(type_str) + 's.' + str(name_eng) + '_A' + str(rack) + '_' + str(mod_1)
-                        break
-                sql_request = f"INSERT INTO signals.allSignals VALUES('" \
-                              f"{str(tag)}','{str(desc)}','{str(klk)}','{str(kont)}','{str(initPath)}','" \
-                              f"{str(position)}','{str(cabinet)}','{str(rack)}','{str(mod)}');\n"
-                file.write(sql_request)
-            file.close()
-            logger.info(f'SQL Скрипт готов')
-            return (f'SQL Скрипт готов')
-        except:
-            logger.error(f'SQL Скрипт ошибка')
-            return (f'SQL Скрипт ошибка')
+                if str(name_rus) == str(cabinet):
+                    mod_1 = mod
+                    mod_1 = ('0' + str(mod_1)) if (int(mod_1) < 10) else mod_1
+                    initPath = 'Diag.' + str(type_str) + 's.' + str(name_eng) + '_A' + str(rack) + '_' + str(mod_1)
+                    break
+            sql_request = f"INSERT INTO signals.allSignals VALUES('" \
+                            f"{str(tag)}','{str(desc)}','{str(klk)}','{str(kont)}','{str(initPath)}','" \
+                            f"{str(position)}','{str(cabinet)}','{str(rack)}','{str(mod)}');\n"
+            file.write(sql_request)
+        file.close()
+        logger.info(f'SQL Скрипт готов')
+        return (f'SQL Скрипт готов')
+        # except:
+        #     logger.error(f'SQL Скрипт ошибка')
+        #     return (f'SQL Скрипт ошибка')
 
     # Тренды
     # Вариант 1 - имеются подгруппы у родителей
@@ -6222,80 +6226,80 @@ class Equipment(Initialisation_path):
                     object.append(group)
         root.append(object)
         # Определяемся с количеством групп
-        row = sheet.max_row
-        for lvl_one in root.iter('Source'):
-            object = etree.Element('Group')
-            object.attrib['Name'] = 'SNMP'
-            for i in range(2, row + 1):
-                snmp_row = str(sheet.cell(row=i, column=1).value).split(',')
-                if snmp_row[2].lower() == 'snmp':
-                    logger.info(f'Строка SNMP найдена')
-                    snmp_parent = snmp_row[0]
-                    continue
-                if snmp_parent == snmp_row[1]:
-                    name_equipment = snmp_row[3]
-                    snmp_subject = snmp_row[0]
-                    group = etree.Element('Group')
-                    group.attrib['Name'] = str(name_equipment)
-                    for k in range(i, row + 1):
-                        group_snmp = str(sheet.cell(row=k, column=1).value).split(',')
-                        if group_snmp[1] == snmp_subject:
-                            id_parent = group_snmp[0]
-                            pod_group = etree.Element('Group')
-                            pod_group.attrib['Name'] = str(group_snmp[2])
-                            for s in range(i, row + 1):
-                                snmp_id = str(sheet.cell(row=s, column=1).value).split(',')
-                                if snmp_id[1] == id_parent:
-                                    if self.str_find(group_snmp[2], 'port') or group_snmp[2].lower() == 'system':
-                                        group_tag = etree.Element('Tag')
-                                        group_tag.attrib['Name'] = str(snmp_id[0])
-                                        group_tag.attrib['Alias'] = str(snmp_id[2])
-                                        group_tag.attrib['EGU'] = str(snmp_id[4])
-                                        group_tag.attrib['Description'] = str(snmp_id[3])
-                                        group_tag.attrib['Format'] = str('%g')
-                                        group_tag.attrib['Min'] = str(0)
-                                        group_tag.attrib['Max'] = str(100)
-                                        pod_group.append(group_tag)
+        # row = sheet.max_row
+        # for lvl_one in root.iter('Source'):
+        #     object = etree.Element('Group')
+        #     object.attrib['Name'] = 'SNMP'
+        #     for i in range(2, row + 1):
+        #         snmp_row = str(sheet.cell(row=i, column=1).value).split(',')
+        #         if snmp_row[2].lower() == 'snmp':
+        #             logger.info(f'Строка SNMP найдена')
+        #             snmp_parent = snmp_row[0]
+        #             continue
+        #         if snmp_parent == snmp_row[1]:
+        #             name_equipment = snmp_row[3]
+        #             snmp_subject = snmp_row[0]
+        #             group = etree.Element('Group')
+        #             group.attrib['Name'] = str(name_equipment)
+        #             for k in range(i, row + 1):
+        #                 group_snmp = str(sheet.cell(row=k, column=1).value).split(',')
+        #                 if group_snmp[1] == snmp_subject:
+        #                     id_parent = group_snmp[0]
+        #                     pod_group = etree.Element('Group')
+        #                     pod_group.attrib['Name'] = str(group_snmp[2])
+        #                     for s in range(i, row + 1):
+        #                         snmp_id = str(sheet.cell(row=s, column=1).value).split(',')
+        #                         if snmp_id[1] == id_parent:
+        #                             if self.str_find(group_snmp[2], 'port') or group_snmp[2].lower() == 'system':
+        #                                 group_tag = etree.Element('Tag')
+        #                                 group_tag.attrib['Name'] = str(snmp_id[0])
+        #                                 group_tag.attrib['Alias'] = str(snmp_id[2])
+        #                                 group_tag.attrib['EGU'] = str(snmp_id[4])
+        #                                 group_tag.attrib['Description'] = str(snmp_id[3])
+        #                                 group_tag.attrib['Format'] = str('%g')
+        #                                 group_tag.attrib['Min'] = str(0)
+        #                                 group_tag.attrib['Max'] = str(100)
+        #                                 pod_group.append(group_tag)
 
-                                    elif snmp_id[2].lower() == 'temp':
-                                        pod_group = etree.Element('Group')
-                                        pod_group.attrib['Name'] = str(snmp_id[2])
-                                        for x in range(i, row + 1):
-                                            item_temp = str(sheet.cell(row=x, column=1).value).split(',')
-                                            if snmp_id[0] == item_temp[1]:
-                                                pod_pod_child_group = etree.Element('Group')
-                                                pod_pod_child_group.attrib['Name'] = str(item_temp[2])
-                                                for v in range(i, row + 1):
-                                                    item = str(sheet.cell(row=v, column=1).value).split(',')
-                                                    if item_temp[0] == item[1]:
-                                                        group_tag = etree.Element('Tag')
-                                                        group_tag.attrib['Name'] = str(item[0])
-                                                        group_tag.attrib['Alias'] = str(item[2])
-                                                        group_tag.attrib['EGU'] = str(item[4])
-                                                        group_tag.attrib['Description'] = str(item[3])
-                                                        group_tag.attrib['Format'] = str('%g')
-                                                        group_tag.attrib['Min'] = str(0)
-                                                        group_tag.attrib['Max'] = str(100)
-                                                        pod_pod_child_group.append(group_tag)
-                                                        break
-                                                pod_group.append(pod_pod_child_group)
-                                    else:
-                                        for w in range(i, row + 1):
-                                            item = str(sheet.cell(row=w, column=1).value).split(',')
-                                            if snmp_id[0] == item[1]:
-                                                group_tag = etree.Element('Tag')
-                                                group_tag.attrib['Name'] = str(item[0])
-                                                group_tag.attrib['Alias'] = str(item[2])
-                                                group_tag.attrib['EGU'] = str(item[4])
-                                                group_tag.attrib['Description'] = str(item[3])
-                                                group_tag.attrib['Format'] = str('%g')
-                                                group_tag.attrib['Min'] = str(0)
-                                                group_tag.attrib['Max'] = str(100)
-                                                pod_group.append(group_tag)
-                                                break
-                            group.append(pod_group)
-                    object.append(group)
-        root.append(object)
+        #                             elif snmp_id[2].lower() == 'temp':
+        #                                 pod_group = etree.Element('Group')
+        #                                 pod_group.attrib['Name'] = str(snmp_id[2])
+        #                                 for x in range(i, row + 1):
+        #                                     item_temp = str(sheet.cell(row=x, column=1).value).split(',')
+        #                                     if snmp_id[0] == item_temp[1]:
+        #                                         pod_pod_child_group = etree.Element('Group')
+        #                                         pod_pod_child_group.attrib['Name'] = str(item_temp[2])
+        #                                         for v in range(i, row + 1):
+        #                                             item = str(sheet.cell(row=v, column=1).value).split(',')
+        #                                             if item_temp[0] == item[1]:
+        #                                                 group_tag = etree.Element('Tag')
+        #                                                 group_tag.attrib['Name'] = str(item[0])
+        #                                                 group_tag.attrib['Alias'] = str(item[2])
+        #                                                 group_tag.attrib['EGU'] = str(item[4])
+        #                                                 group_tag.attrib['Description'] = str(item[3])
+        #                                                 group_tag.attrib['Format'] = str('%g')
+        #                                                 group_tag.attrib['Min'] = str(0)
+        #                                                 group_tag.attrib['Max'] = str(100)
+        #                                                 pod_pod_child_group.append(group_tag)
+        #                                                 break
+        #                                         pod_group.append(pod_pod_child_group)
+        #                             else:
+        #                                 for w in range(i, row + 1):
+        #                                     item = str(sheet.cell(row=w, column=1).value).split(',')
+        #                                     if snmp_id[0] == item[1]:
+        #                                         group_tag = etree.Element('Tag')
+        #                                         group_tag.attrib['Name'] = str(item[0])
+        #                                         group_tag.attrib['Alias'] = str(item[2])
+        #                                         group_tag.attrib['EGU'] = str(item[4])
+        #                                         group_tag.attrib['Description'] = str(item[3])
+        #                                         group_tag.attrib['Format'] = str('%g')
+        #                                         group_tag.attrib['Min'] = str(0)
+        #                                         group_tag.attrib['Max'] = str(100)
+        #                                         pod_group.append(group_tag)
+        #                                         break
+        #                     group.append(pod_group)
+        #             object.append(group)
+        # root.append(object)
         tree.write(path_trend, pretty_print=True, encoding="utf-8")
         logger.info(f'Дерево трендов успешно создано')
         return (f'Выполнено. Генерация файла трендов выполнена')
@@ -10093,6 +10097,10 @@ def uts_upts_gen(path_save):
 		f'\t\t<designed target="BrushStyle" value="0" ver="5"/>\n'
 	f'\t</object>\n'
 	f'\t<designed target="WindowIconPath" value="tn_logo.jpg" ver="5"/>\n'
+    f'\t<object access-modifier="private" name="Form_UTS_Control" display-name="Form_UTS_Control" uuid="9193a38e-cafb-44a8-b8f7-e13e85c2de3a" base-type="Window" base-type-id="04615219-28bb-4a9a-bba4-50ac66972eb0" ver="5" description="" cardinal="1">\n'
+		f'\t\t<do-on access-modifier="private" name="Handler_1" display-name="Handler_1" ver="5" event="MessageReceived" form-action="close"/>\n'
+		f'\t\t<init target="Group" ver="5" ref="unit.WorkspaceControl.Form_UPTS_Control"/>\n'
+	f'\t</object>\n'   
 	f'\t<do-on access-modifier="private" name="Handler_8" display-name="Handler_8" ver="5" event="Opened">\n'
 		f'\t\t<body kind="om">\n'
 			f'\t\t\t<![CDATA[if (unit.Variables.MonitorOrientation == 1)\n'
