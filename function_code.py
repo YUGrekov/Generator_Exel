@@ -9891,9 +9891,16 @@ class Equipment(Initialisation_path):
                                     if numb_modl_HW == str(numb_modl_KD):
                                         through_num_mod = int((re.findall(r'\d+', type_modul))[0])
 
+                                        if (numb_chan_KD - 1) > 15: 
+                                            num_chan_rasch = (numb_chan_KD - 1) - 16
+                                            num_reg_rasch  = 2 * (through_num_mod - 1) + 1
+                                        else: 
+                                            num_chan_rasch = numb_chan_KD - 1
+                                            num_reg_rasch  = (2 * (through_num_mod - 1))
+                                        
                                         exit_True = True
 
-                                        mb_adrr_DI = f'{int(mb_DI) + (through_num_mod - 1)}.{numb_chan_KD - 1}'
+                                        mb_adrr_DI = f'{int(mb_DI) + num_reg_rasch}.{num_chan_rasch}'
                                         signals.append(dict(Index       = numb_DI,
                                                             Type        = 'DI',
                                                             Tag         = tag,

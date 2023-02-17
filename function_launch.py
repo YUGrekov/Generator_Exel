@@ -6,12 +6,12 @@ from lxml import etree
 import codecs
 
 # Пути до файлов неисповедимы
-path_to_exel        = 'D:\Проекты\LPDS_Salim\HMI\_Docs\НПС Салым-4 IO v0.26.xlsx'
-#path_to_exel        = 'D:\Проекты\НПС-Аксинино_2\HMI\_Docs\НПС Аксинино-2 IO МК-500 v1.78.xlsx'
+#path_to_exel        = 'D:\Проекты\LPDS_Salim\HMI\_Docs\НПС Салым-4 IO v0.28.xlsx'
+path_to_exel        = 'D:\Проекты\НПС-Аксинино_2\HMI\_Docs\НПС Аксинино-2 IO МК-500 v1.78.xlsx'
 #path_to_exel        = 'D:\Проекты\НПС-Аксинино_2\HMI\_Docs\KarkateevoIO.xlsx'
 #path_to_exel        = 'D:\Проекты\LPDS_Salim\HMI\_Docs\ИО_ПТ_Салым_v2.52.xlsx'
 #path_to_exel         = 'D:\Проекты\НПС-Аксинино_2\HMI\_Docs\АСУ ПТ Аксинино-2 IO_v3.72.xlsx'
-#path_to_exel        = 'D:\Проекты\НПС-Аксинино_2\HMI\_Docs\САР (Дросселирование) IO_30.08.2022.xlsx'
+#path_to_exel        = 'D:\Проекты\LPDS_Salim\HMI\_Docs\САР (Дросселирование) IO_Салым.xlsx'
 #path_to_exel        = 'D:\Проекты\LPDS_Salim\HMI_KARKAR\_Docs\KarkateevoIO.xlsx'
 
 # path_to_adressmap       = 'D:\Проекты\НПС-Аксинино_2\HMI\project\\typical_prj\ODA.xml'
@@ -50,7 +50,7 @@ prefix_sys_HMI   = 'MNS_'
 
 # Карта защит
 # Путь расположения файлов .omobj для генерации защит, здесь должен быть шаблон: Form_Defences_default.omobj
-path_gen_station_defence   = 'D:\Проекты\НПС-Аксинино_2\HMI\_Docs\Defence\\'
+path_gen_station_defence   = 'D:\Проекты\LPDS_Salim\HMI\_Docs\Defence\\'
 # GMPNA или KTPRA или KTPR иди KTPRP
 list_defence = 'KTPR'
 
@@ -146,7 +146,7 @@ New_copy = Equipment(path_to_exel, path_to_adressmap, path_to_adressmap_mb,
 #New_copy.diag_rackstates()
 
 # Imitator
-#New_copy.file_xml_imitator(path_file_txt, 50200, 50000)
+New_copy.file_xml_imitator(path_file_txt, 50200, 50000)
 
 #New_copy.gen_cfg_pic('D:\Проекты\НПС-Аксинино_2\HMI\_Docs\SU\\', 'MNS')
 #New_copy.gen_cfg_ktprs('D:\Проекты\НПС-Аксинино_2\HMI\_Docs\SU\\')
@@ -175,7 +175,7 @@ New_copy = Equipment(path_to_exel, path_to_adressmap, path_to_adressmap_mb,
 
 # SQL скрипт для поиска сигналов
 # Название таблицы: SearchSignal -> signals -> allSignals
-New_copy.sql_script_search('D:\Проекты\LPDS_Salim\HMI\_Docs\Trends\\')
+#New_copy.sql_script_search('D:\Проекты\LPDS_Salim\HMI\_Docs\Trends\\')
 
 # Сообщения MSG
 #New_copy.msg_racks('D:\Проекты\НПС-Аксинино_2\HMI\_Docs\MSG\\', 'D:\Проекты\НПС-Аксинино_2\HMI\_Docs\MSG\\')
@@ -188,8 +188,10 @@ New_copy.sql_script_search('D:\Проекты\LPDS_Salim\HMI\_Docs\Trends\\')
 # Экранные формы диагностики
 #gen_HMI_USO(path_gen_hmi_USO, path_to_exel, prefix_sys_HMI)
 #generate_serv_signal('D:\Проекты\НПС-Аксинино_2\HMI\_Docs\Defence\\', path_to_exel, False, 'MNS_')
+
 # Карты защит и готовностей
 #gen_station_defence(path_gen_station_defence, path_to_exel, list_defence)
+
 # Табло и сирены
 #gen_uts_upts('D:\Проекты\LPDS_Salim\HMI\_Docs\Defence\\', path_to_exel, 'UTS', 'false')
 
