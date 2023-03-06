@@ -6177,7 +6177,7 @@ class Equipment(Initialisation_path):
                                         number_tag = int(tag_name[0]) + 1
                                         group_tag = etree.Element('Tag')
                                         group_tag.attrib['Name'] = str(number_tag)
-                                        group_tag.attrib['Alias'] = str(tag)
+                                        group_tag.attrib['Alias'] = str(value['Идентификатор'])
                                         group_tag.attrib['EGU'] = str(egu)
                                         group_tag.attrib['Description'] = str(name)
                                         group_tag.attrib['Format'] = '%g'
@@ -6214,7 +6214,7 @@ class Equipment(Initialisation_path):
                                                 number_tag = int(tag_name[0]) + 1
                                                 group_tag = etree.Element('Tag')
                                                 group_tag.attrib['Name'] = str(number_tag)
-                                                group_tag.attrib['Alias'] = str(tag)
+                                                group_tag.attrib['Alias'] = str(value['Идентификатор'])
                                                 group_tag.attrib['EGU'] = str(egu)
                                                 group_tag.attrib['Description'] = str(name)
                                                 group_tag.attrib['Format'] = '%g'
@@ -6226,80 +6226,80 @@ class Equipment(Initialisation_path):
                     object.append(group)
         root.append(object)
         # Определяемся с количеством групп
-        # row = sheet.max_row
-        # for lvl_one in root.iter('Source'):
-        #     object = etree.Element('Group')
-        #     object.attrib['Name'] = 'SNMP'
-        #     for i in range(2, row + 1):
-        #         snmp_row = str(sheet.cell(row=i, column=1).value).split(',')
-        #         if snmp_row[2].lower() == 'snmp':
-        #             logger.info(f'Строка SNMP найдена')
-        #             snmp_parent = snmp_row[0]
-        #             continue
-        #         if snmp_parent == snmp_row[1]:
-        #             name_equipment = snmp_row[3]
-        #             snmp_subject = snmp_row[0]
-        #             group = etree.Element('Group')
-        #             group.attrib['Name'] = str(name_equipment)
-        #             for k in range(i, row + 1):
-        #                 group_snmp = str(sheet.cell(row=k, column=1).value).split(',')
-        #                 if group_snmp[1] == snmp_subject:
-        #                     id_parent = group_snmp[0]
-        #                     pod_group = etree.Element('Group')
-        #                     pod_group.attrib['Name'] = str(group_snmp[2])
-        #                     for s in range(i, row + 1):
-        #                         snmp_id = str(sheet.cell(row=s, column=1).value).split(',')
-        #                         if snmp_id[1] == id_parent:
-        #                             if self.str_find(group_snmp[2], 'port') or group_snmp[2].lower() == 'system':
-        #                                 group_tag = etree.Element('Tag')
-        #                                 group_tag.attrib['Name'] = str(snmp_id[0])
-        #                                 group_tag.attrib['Alias'] = str(snmp_id[2])
-        #                                 group_tag.attrib['EGU'] = str(snmp_id[4])
-        #                                 group_tag.attrib['Description'] = str(snmp_id[3])
-        #                                 group_tag.attrib['Format'] = str('%g')
-        #                                 group_tag.attrib['Min'] = str(0)
-        #                                 group_tag.attrib['Max'] = str(100)
-        #                                 pod_group.append(group_tag)
+        row = sheet.max_row
+        for lvl_one in root.iter('Source'):
+            object = etree.Element('Group')
+            object.attrib['Name'] = 'SNMP'
+            for i in range(2, row + 1):
+                snmp_row = str(sheet.cell(row=i, column=1).value).split(',')
+                if snmp_row[2].lower() == 'snmp':
+                    logger.info(f'Строка SNMP найдена')
+                    snmp_parent = snmp_row[0]
+                    continue
+                if snmp_parent == snmp_row[1]:
+                    name_equipment = snmp_row[3]
+                    snmp_subject = snmp_row[0]
+                    group = etree.Element('Group')
+                    group.attrib['Name'] = str(name_equipment)
+                    for k in range(i, row + 1):
+                        group_snmp = str(sheet.cell(row=k, column=1).value).split(',')
+                        if group_snmp[1] == snmp_subject:
+                            id_parent = group_snmp[0]
+                            pod_group = etree.Element('Group')
+                            pod_group.attrib['Name'] = str(group_snmp[2])
+                            for s in range(i, row + 1):
+                                snmp_id = str(sheet.cell(row=s, column=1).value).split(',')
+                                if snmp_id[1] == id_parent:
+                                    if self.str_find(group_snmp[2], 'port') or group_snmp[2].lower() == 'system':
+                                        group_tag = etree.Element('Tag')
+                                        group_tag.attrib['Name'] = str(snmp_id[0])
+                                        group_tag.attrib['Alias'] = str(snmp_id[2])
+                                        group_tag.attrib['EGU'] = str(snmp_id[4])
+                                        group_tag.attrib['Description'] = str(snmp_id[3])
+                                        group_tag.attrib['Format'] = str('%g')
+                                        group_tag.attrib['Min'] = str(0)
+                                        group_tag.attrib['Max'] = str(100)
+                                        pod_group.append(group_tag)
 
-        #                             elif snmp_id[2].lower() == 'temp':
-        #                                 pod_group = etree.Element('Group')
-        #                                 pod_group.attrib['Name'] = str(snmp_id[2])
-        #                                 for x in range(i, row + 1):
-        #                                     item_temp = str(sheet.cell(row=x, column=1).value).split(',')
-        #                                     if snmp_id[0] == item_temp[1]:
-        #                                         pod_pod_child_group = etree.Element('Group')
-        #                                         pod_pod_child_group.attrib['Name'] = str(item_temp[2])
-        #                                         for v in range(i, row + 1):
-        #                                             item = str(sheet.cell(row=v, column=1).value).split(',')
-        #                                             if item_temp[0] == item[1]:
-        #                                                 group_tag = etree.Element('Tag')
-        #                                                 group_tag.attrib['Name'] = str(item[0])
-        #                                                 group_tag.attrib['Alias'] = str(item[2])
-        #                                                 group_tag.attrib['EGU'] = str(item[4])
-        #                                                 group_tag.attrib['Description'] = str(item[3])
-        #                                                 group_tag.attrib['Format'] = str('%g')
-        #                                                 group_tag.attrib['Min'] = str(0)
-        #                                                 group_tag.attrib['Max'] = str(100)
-        #                                                 pod_pod_child_group.append(group_tag)
-        #                                                 break
-        #                                         pod_group.append(pod_pod_child_group)
-        #                             else:
-        #                                 for w in range(i, row + 1):
-        #                                     item = str(sheet.cell(row=w, column=1).value).split(',')
-        #                                     if snmp_id[0] == item[1]:
-        #                                         group_tag = etree.Element('Tag')
-        #                                         group_tag.attrib['Name'] = str(item[0])
-        #                                         group_tag.attrib['Alias'] = str(item[2])
-        #                                         group_tag.attrib['EGU'] = str(item[4])
-        #                                         group_tag.attrib['Description'] = str(item[3])
-        #                                         group_tag.attrib['Format'] = str('%g')
-        #                                         group_tag.attrib['Min'] = str(0)
-        #                                         group_tag.attrib['Max'] = str(100)
-        #                                         pod_group.append(group_tag)
-        #                                         break
-        #                     group.append(pod_group)
-        #             object.append(group)
-        # root.append(object)
+                                    elif snmp_id[2].lower() == 'temp':
+                                        pod_group = etree.Element('Group')
+                                        pod_group.attrib['Name'] = str(snmp_id[2])
+                                        for x in range(i, row + 1):
+                                            item_temp = str(sheet.cell(row=x, column=1).value).split(',')
+                                            if snmp_id[0] == item_temp[1]:
+                                                pod_pod_child_group = etree.Element('Group')
+                                                pod_pod_child_group.attrib['Name'] = str(item_temp[2])
+                                                for v in range(i, row + 1):
+                                                    item = str(sheet.cell(row=v, column=1).value).split(',')
+                                                    if item_temp[0] == item[1]:
+                                                        group_tag = etree.Element('Tag')
+                                                        group_tag.attrib['Name'] = str(item[0])
+                                                        group_tag.attrib['Alias'] = str(item[2])
+                                                        group_tag.attrib['EGU'] = str(item[4])
+                                                        group_tag.attrib['Description'] = str(item[3])
+                                                        group_tag.attrib['Format'] = str('%g')
+                                                        group_tag.attrib['Min'] = str(0)
+                                                        group_tag.attrib['Max'] = str(100)
+                                                        pod_pod_child_group.append(group_tag)
+                                                        break
+                                                pod_group.append(pod_pod_child_group)
+                                    else:
+                                        for w in range(i, row + 1):
+                                            item = str(sheet.cell(row=w, column=1).value).split(',')
+                                            if snmp_id[0] == item[1]:
+                                                group_tag = etree.Element('Tag')
+                                                group_tag.attrib['Name'] = str(item[0])
+                                                group_tag.attrib['Alias'] = str(item[2])
+                                                group_tag.attrib['EGU'] = str(item[4])
+                                                group_tag.attrib['Description'] = str(item[3])
+                                                group_tag.attrib['Format'] = str('%g')
+                                                group_tag.attrib['Min'] = str(0)
+                                                group_tag.attrib['Max'] = str(100)
+                                                pod_group.append(group_tag)
+                                                break
+                            group.append(pod_group)
+                    object.append(group)
+        root.append(object)
         tree.write(path_trend, pretty_print=True, encoding="utf-8")
         logger.info(f'Дерево трендов успешно создано')
         return (f'Выполнено. Генерация файла трендов выполнена')
